@@ -1,0 +1,70 @@
+{
+  "name": "@restlens/lib",
+  "version": "0.1.0",
+  "description": "Shared library for REST Lens clients (CLI, IDE, GitHub Action)",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js",
+      "require": "./dist/types/index.js",
+      "default": "./dist/types/index.js"
+    },
+    "./spec": {
+      "types": "./dist/spec/index.d.ts",
+      "import": "./dist/spec/index.js",
+      "require": "./dist/spec/index.js",
+      "default": "./dist/spec/index.js"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "import": "./dist/api/index.js",
+      "require": "./dist/api/index.js",
+      "default": "./dist/api/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Edthing/restlens-lib.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Edthing/restlens-lib/issues"
+  },
+  "homepage": "https://github.com/Edthing/restlens-lib#readme",
+  "keywords": [
+    "restlens",
+    "api",
+    "openapi",
+    "swagger"
+  ],
+  "license": "GPL-3.0-only",
+  "publishConfig": {
+    "access": "public"
+  }
+}
