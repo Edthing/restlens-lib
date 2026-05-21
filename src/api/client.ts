@@ -162,20 +162,26 @@ export class RestLensClient {
    */
   async waitForEvaluation(
     specVersionId: string,
-    options?: { maxAttempts?: number; intervalMs?: number }
+    options?: { orgSlug?: string; projectSlug?: string; maxAttempts?: number; intervalMs?: number }
   ): Promise<ViolationKV[]> {
+    const org = options?.orgSlug || this.orgSlug;
+    const project = options?.projectSlug || this.projectSlug;
+
+    if (!org || !project) {
+      throw new RestLensAPIError(400, "Organization and project must be configured", "missing_config");
+    }
+
     const maxAttempts = options?.maxAttempts ?? 60;
     const intervalMs = options?.intervalMs ?? 2000;
 
+    const url = `${this.baseUrl}/api/projects/${encodeURIComponent(org)}/${encodeURIComponent(project)}/specifications?specId=${encodeURIComponent(specVersionId)}`;
+
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      const response = await this.fetchWithRetry(
-        `${this.baseUrl}/v1/specifications/${specVersionId}/violations`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.accessToken}`,
-          },
-        }
-      );
+      const response = await this.fetchWithRetry(url, {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+      });
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -189,14 +195,14 @@ export class RestLensClient {
       const result = (await response.json()) as ViolationsResponse;
 
       // Check if evaluation is complete
-      const status = result.status || result.evaluation?.status;
+      const status = result.evaluation?.status || result.status;
       if (status === "pending" || status === "in_progress" || status === "evaluating") {
         await this.sleep(intervalMs);
         continue;
       }
 
       if (status === "failed" || status === "error") {
-        throw new RestLensAPIError(500, result.error || "Evaluation failed");
+        throw new RestLensAPIError(500, result.evaluation?.message || result.error || "Evaluation failed");
       }
 
       // Evaluation complete
